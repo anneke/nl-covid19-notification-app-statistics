@@ -6,14 +6,12 @@
     </div>
 
     <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://d3js.org/d3-time.v2.min.js"></script>
+    <script src="https://d3js.org/d3-time-format.v3.min.js"></script>
     <script>
-        d3.csv("statistics/appstore_statistics.csv").then(function(data) {
-          console.log(data[0]);
-        });
-
         d3.csv("statistics/appstore_statistics.csv", function(data) {
         return {
-          date : d3.timeParse("%d-%m-%Y")(data.Date),
+          test: data["Date (yyyy-mm-dd)"],
           downloads_iOS_daily :  +data["Downloads App Store (iOS) (daily)"],
           downloads_PlayStore_daily : +data["Downloads Play Store (Android) (daily)"],
           downloads_Huawei_daily : +data["Downloads Huawei App Gallery (Android) (daily)"],
@@ -22,6 +20,7 @@
         };
       }).then(function(data) {
         console.table(data[0]);
+        console.table(data[2]);
       });
     </script>
 </html>
