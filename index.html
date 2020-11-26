@@ -1,9 +1,36 @@
 <html>
     <h1>Statistieken CoronaMelder.nl</h1>
 
-    <div class="test">
+    <article>
+      <h2>Mensen die CoronaMelder gedownload hebben</h2>
+      <p>Verticaal: aantal, horizontaal datum</p>
+      <p>line chart</p>
+      <div id="aantalDownloads"></div>
 
-    </div>
+      <figure class="grafiek">
+
+        <figcaption>De grafiek laat zien hoeveel mensen CoronaMelder
+          hebben gedownload.</figcaption>
+      </figure>
+
+      <p><strong id="aantalDownloadsPercentageBevolking"></strong> van de Nederlandse bevolking heeft
+        CoronaMelder gedownload.</p>
+    </article>
+
+    <article>
+      <h2>Mensen die anderen waarschuwden via CoronaMelder</h2>
+      <p>Verticaal: aantal, horizontaal datum</p>
+      <p>line chart</p>
+      <div id="aantalWaarschuwingen"></div>
+      <p>
+        Als je positief getest bent op corona, dan kun je dit
+        vrijwillig aangeven in de app, samen met een
+        medewerker van de GGD.<br />
+        De grafiek laat zien hoeveel mensen dit hebben gedaan
+        na landelijke introductie van CoronaMelder op 10
+        oktober
+      </p>
+    </article>
 
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="https://d3js.org/d3-time.v2.min.js"></script>
@@ -15,12 +42,22 @@
           downloads_iOS_daily :  +data["Downloads App Store (iOS) (daily)"],
           downloads_PlayStore_daily : +data["Downloads Play Store (Android) (daily)"],
           downloads_Huawei_daily : +data["Downloads Huawei App Gallery (Android) (daily)"],
-          downloads_Huawei_daily : +data["Total downloads (daily)"],
-          downloads_Huawei_daily : +data["Total downloads (cumulative)"],
+          downloads_Total_daily : +data["Total downloads (daily)"],
+          downloads_Total_cumulative : +data["Total downloads (cumulative)"],
         };
       }).then(function(data) {
         console.table(data[0]);
         console.table(data[2]);
+
+        const aantalDownloads = document.getElementById("aantalDownloads");
+        aantalDownloads.innerHTML = data[data.length - 1].downloads_Total_cumulative;
+
+        const aantalDownloadsPercentageBevolking = document.getElementById("aantalDownloadsPercentageBevolking");
+        const bevolkingNederland = 17472667;
+        const calcPercentage = (data[data.length - 1].downloads_Total_cumulative / bevolkingNederland) * 100;
+        aantalDownloadsPercentageBevolking.innerHTML = calcPercentage.toFixed(2) + '%';
+        
       });
     </script>
 </html>
+
