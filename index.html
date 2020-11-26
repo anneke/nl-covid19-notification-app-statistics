@@ -42,7 +42,7 @@
     <script>
         d3.csv("statistics/appstore_statistics.csv", function(data) {
         return {
-          test: data["Date (yyyy-mm-dd)"],
+          date: data["Date (yyyy-mm-dd)"],
           downloads_iOS_daily :  +data["Downloads App Store (iOS) (daily)"],
           downloads_PlayStore_daily : +data["Downloads Play Store (Android) (daily)"],
           downloads_Huawei_daily : +data["Downloads Huawei App Gallery (Android) (daily)"],
@@ -87,11 +87,12 @@
                   return i * barwidth;
               })
               .attr('y', function(d,i){
-                  const test = (h / data[i].downloads_Total_cumulative) * 100;
+                  const test = (h / data[i].downloads_Total_cumulative) * 6500;
                   // return h - d.height*2
                   return h * test;
               })
               .attr('fill', 'blue')
+              .attr('data-date', data[i].date);
           }
 
           barChart(data);
