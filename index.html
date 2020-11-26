@@ -22,10 +22,12 @@
     </article>
 
     <article>
-      <h2>Mensen die anderen waarschuwden via CoronaMelder</h2>
-      <p>Verticaal: aantal, horizontaal datum</p>
-      <p>line chart</p>
-      <div id="aantalWaarschuwingen"></div>
+      <h2>Mensen die anderen waarschuwden via CoronaMelder</h2> 
+
+      <figure class="grafiek">
+        <div id="aantalWaarschuwingen"></div>
+        <figcaption>De grafiek laat zien hoeveel mensen gewaarschuwd zijn via CoronaMelder.</figcaption>
+      </figure>
       <p>
         Als je positief getest bent op corona, dan kun je dit
         vrijwillig aangeven in de app, samen met een
@@ -47,22 +49,22 @@
           downloads_PlayStore_daily : +data["Downloads Play Store (Android) (daily)"],
           downloads_Huawei_daily : +data["Downloads Huawei App Gallery (Android) (daily)"],
           downloads_Total_daily : +data["Total downloads (daily)"],
-          downloads_Total_cumulative : +data["Total downloads (cumulative)"],
+          Total_cumulative : +data["Total downloads (cumulative)"],
         };
       }).then(function(data) {
         // get total number of downloads
         const aantalDownloads = document.getElementById("aantalDownloads");
-        aantalDownloads.innerHTML = data[data.length - 1].downloads_Total_cumulative.toLocaleString('nl-NL');
+        aantalDownloads.innerHTML = data[data.length - 1].Total_cumulative.toLocaleString('nl-NL');
 
         // get number of downloads and use it to calculate the percentage of the total number of Dutchies
         const aantalDownloadsPercentageBevolking = document.getElementById("aantalDownloadsPercentageBevolking");
         const bevolkingNederland = 17472667;
-        const calcPercentage = (data[data.length - 1].downloads_Total_cumulative / bevolkingNederland) * 100;
+        const calcPercentage = (data[data.length - 1].Total_cumulative / bevolkingNederland) * 100;
         aantalDownloadsPercentageBevolking.innerHTML = calcPercentage.toFixed(2) + '%';
 
         function barChart(data) {
           var w= 1200;
-          var h= (data[data.length - 1].downloads_Total_cumulative / 6500);
+          var h= (data[data.length - 1].Total_cumulative / 6500);
 
           var svg= d3.select('#grafiekDownloads')
               .append('svg')
@@ -79,17 +81,14 @@
                   return (w / (data.length + 2));
               })
               .attr('height', function(d,i){
-                  const test = (data[i].downloads_Total_cumulative / 6500);
+                  const test = (data[i].Total_cumulative / 6500);
                   return test;
               })
               .attr('x', function(d,i){
-                  // return i * (d.width+2)
                   return i * (barwidth + 2);
               })
               .attr('y', function(d,i){
-                  console.info('h is' + h);
-                  console.info('d is' + data[i].downloads_Total_cumulative / 6500);
-                  return h - (data[i].downloads_Total_cumulative / 6500);
+                  return h - (data[i].Total_cumulative / 6500);
               })
               .attr('fill', 'blue')
               .attr('data-date', function(d,i){
@@ -98,6 +97,52 @@
           }
 
           barChart(data);
+      });
+
+
+      d3.csv("statistics/appstore_statistics.csv", function(data) {
+        return {
+          positive_tests_date: data["Date (yyyy-mm-dd)"],
+          positive_tests_thisday: +data["Reported positive tests through app authorised by GGD (daily)"],
+          Total_cumulative : +data["Reported positive test through app authorised by GGD (cumulative)"],
+        };
+      }).then(function(data) {
+
+        function barChartGGD(data) {
+          var w= 1200;
+          var h= (data[data.length - 1].Total_cumulative / 6500);
+
+          var svg= d3.select('#aantalWaarschuwingen')
+              .append('svg')
+              .attr('width', w)
+              .attr('height', h);
+
+          var barwidth = w / data.length;
+
+          svg.selectAll('rect.colorBar')
+              .data(data)
+              .enter()
+              .append('rect')
+              .attr('width', function(d,i){
+                  return (w / (data.length + 2));
+              })
+              .attr('height', function(d,i){
+                  const test = (data[i].Total_cumulative / 6500);
+                  return test;
+              })
+              .attr('x', function(d,i){
+                  return i * (barwidth + 2);
+              })
+              .attr('y', function(d,i){
+                  return h - (data[i].Total_cumulative / 6500);
+              })
+              .attr('fill', 'blue')
+              .attr('data-date', function(d,i){
+                return data[i].positive_tests_date
+              });
+          }
+
+          barChartGGD(data);
       });
     </script>
 </html>
