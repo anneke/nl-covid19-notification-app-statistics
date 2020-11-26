@@ -3,9 +3,8 @@
 
     <article>
       <h2>Mensen die CoronaMelder gedownload hebben</h2>
-      <p>Verticaal: aantal, horizontaal datum</p>
-      <p>line chart</p>
-      <div id="aantalDownloads"></div>
+
+      <strong id="aantalDownloads"></strong>
 
       <figure class="grafiek">
 
@@ -50,7 +49,7 @@
         console.table(data[2]);
 
         const aantalDownloads = document.getElementById("aantalDownloads");
-        aantalDownloads.innerHTML = data[data.length - 1].downloads_Total_cumulative;
+        aantalDownloads.innerHTML = data[data.length - 1].downloads_Total_cumulative.toLocaleString('nl-NL');
 
         const aantalDownloadsPercentageBevolking = document.getElementById("aantalDownloadsPercentageBevolking");
         const bevolkingNederland = 17472667;
