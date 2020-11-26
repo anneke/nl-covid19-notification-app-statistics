@@ -100,7 +100,7 @@
       });
 
 
-      d3.csv("statistics/appstore_statistics.csv", function(data) {
+      d3.csv("statistics/ggd_positive_test_authorisations.csv", function(data) {
         return {
           positive_tests_date: data["Date (yyyy-mm-dd)"],
           positive_tests_thisday: +data["Reported positive tests through app authorised by GGD (daily)"],
@@ -110,7 +110,7 @@
 
         function barChartGGD(data) {
           var w= 1200;
-          var h= (data[data.length - 1].Total_cumulative / 6500);
+          var h= (data[data.length - 1].Total_cumulative / 100);
 
           var svg= d3.select('#aantalWaarschuwingen')
               .append('svg')
@@ -127,14 +127,14 @@
                   return (w / (data.length + 2));
               })
               .attr('height', function(d,i){
-                  const test = (data[i].Total_cumulative / 6500);
+                  const test = (data[i].Total_cumulative / 100);
                   return test;
               })
               .attr('x', function(d,i){
                   return i * (barwidth + 2);
               })
               .attr('y', function(d,i){
-                  return h - (data[i].Total_cumulative / 6500);
+                  return h - (data[i].Total_cumulative / 100);
               })
               .attr('fill', 'blue')
               .attr('data-date', function(d,i){
