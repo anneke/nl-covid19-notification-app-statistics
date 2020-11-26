@@ -13,7 +13,7 @@
 
         d3.csv("statistics/appstore_statistics.csv", function(data) {
         return {
-          date : +data["Date (yyyy-mm-dd)"],
+          date : d3.timeParse("%d-%m-%Y")(data.Date),
           downloads_iOS_daily :  +data["Downloads App Store (iOS) (daily)"],
           downloads_PlayStore_daily : +data["Downloads Play Store (Android) (daily)"],
           downloads_Huawei_daily : +data["Downloads Huawei App Gallery (Android) (daily)"],
