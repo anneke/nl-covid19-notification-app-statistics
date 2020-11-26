@@ -79,7 +79,7 @@
                   return w / data.length;
               })
               .attr('height', function(d,i){
-                  const test = (data[i].downloads_Total_cumulative / h) * 100;
+                  const test = (data[i].downloads_Total_cumulative / data[data.length - 1].downloads_Total_cumulative) * 100;
                   return test;
               })
               .attr('x', function(d,i){
