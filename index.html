@@ -68,8 +68,9 @@
 
           var svg= d3.select('#grafiekDownloads')
               .append('svg')
-              .attr('width', w)
-              .attr('height', h);
+              // .attr('width', w)
+              // .attr('height', h)
+              .attr('viewBox', '0 0 ' + w + ' ' + h);
 
           var barwidth = w / data.length;
 
@@ -114,8 +115,9 @@
 
           var svg= d3.select('#aantalWaarschuwingen')
               .append('svg')
-              .attr('width', w)
-              .attr('height', h);
+              // .attr('width', w)
+              // .attr('height', h)
+              .attr('viewBox', '0 0 ' + w + ' ' + h);
 
           var barwidth = w / data.length;
 
