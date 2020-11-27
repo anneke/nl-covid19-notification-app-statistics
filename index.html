@@ -48,8 +48,15 @@
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="https://d3js.org/d3-time.v2.min.js"></script>
     <script src="https://d3js.org/d3-time-format.v3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+
+
     <script>
-        d3.csv("statistics/appstore_statistics.csv", function(data) {
+      
+    </script>
+
+    <script>
+      d3.csv("statistics/appstore_statistics.csv", function(data) {
         return {
           downloads_date: data["Date (yyyy-mm-dd)"],
           downloads_iOS_daily :  +data["Downloads App Store (iOS) (daily)"],
@@ -59,6 +66,10 @@
           Total_cumulative : +data["Total downloads (cumulative)"],
         };
       }).then(function(data) {
+
+        const justDates = data.map((loop) => loop.downloads_date);
+        newArray = convertToWeekNumbers(justDates);
+
         // get total number of downloads
         const aantalDownloads = document.getElementById("aantalDownloads");
         aantalDownloads.innerHTML = data[data.length - 1].Total_cumulative.toLocaleString('nl-NL');
@@ -75,8 +86,6 @@
 
           var svg= d3.select('#grafiekDownloads')
               .append('svg')
-              // .attr('width', w)
-              // .attr('height', h)
               .attr('viewBox', '0 0 ' + w + ' ' + h);
 
           var barwidth = w / data.length;
@@ -100,13 +109,12 @@
               })
               .attr('fill', 'blue')
               .attr('data-date', function(d,i){
-                return data[i].downloads_date
+                return data[i].downloads_date;
               });
           }
 
           barChart(data);
       });
-
 
       d3.csv("statistics/ggd_positive_test_authorisations.csv", function(data) {
         return {
@@ -116,14 +124,17 @@
         };
       }).then(function(data) {
 
+        const justDates = data.map((loop) => loop.positive_tests_date);
+        // console.log(justDates);
+
+        newArrayTwo = convertToWeekNumbers(justDates);
+
         function barChartGGD(data) {
           var w= 1200;
           var h= (data[data.length - 1].Total_cumulative / 100);
 
           var svg= d3.select('#aantalWaarschuwingen')
               .append('svg')
-              // .attr('width', w)
-              // .attr('height', h)
               .attr('viewBox', '0 0 ' + w + ' ' + h);
 
           var barwidth = w / data.length;
@@ -147,12 +158,63 @@
               })
               .attr('fill', 'blue')
               .attr('data-date', function(d,i){
-                return data[i].positive_tests_date
+                return data[i].positive_tests_date;
               });
-          }
+        }
 
           barChartGGD(data);
       });
+
+      function convertToWeekNumbers(data) {
+        /* Helper to get the ISO week number of a date
+        ** @param {Date} date to get week of
+        ** @returns {Array} [year, weekNumber]
+        */
+        function getWeekNumber(d) {
+          d = new Date(+d);
+          d.setHours(0,0,0,0);
+          d.setDate(d.getDate() + 4 - (d.getDay()||7));
+          var yearStart = new Date(d.getFullYear(),0,1);
+          var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+          return [weekNo];
+        }
+
+        /* Parse ISO 8601 format date string to local date
+        ** @param {string} s - string to parse like 2016-12-15
+        ** @returns {Date}
+        */
+        function parseISOLocal(s) {
+          var b = s.split(/\D/);
+          return new Date(b[0],b[1]-1,b[2]);
+        }
+
+        // Prepend year and week number to dates, e.g. "201651:2016-12-20", then sort
+        var arr = data.map(function(s){
+          var week = getWeekNumber(parseISOLocal(s));
+          return week[0] + ('0' + week[1]).slice(-2);
+        }).sort();
+
+        console.log('arr' + arr);
+
+        // Group in arrays by week in an object
+        var groupedObj = arr.reduce(function (result, value) {
+          var b = value;
+          if (!result[b[0]]) result[b[0]] = [];
+          result[b[0]].push(b[1]);
+          return result;
+        },{});
+
+        console.log('groupedObj' + groupedObj);
+
+        // Grab arrays in order of week number. Sort keys to maintain order
+        var groupedArray = Object.keys(groupedObj).sort().map(key=>groupedObj[key]);
+
+
+        console.log('groupedArray' + groupedArray);
+
+        // Final set of grouped dates
+        console.log(groupedArray.join('\n\n'));
+      }
     </script>
 </html>
 
