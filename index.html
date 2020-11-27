@@ -124,7 +124,7 @@
         };
       }).then(function(data) {
 
-        const justDates = data.map((loop) => loop.positive_tests_date);
+        const justDates = data.map((loop) => loop.positive_tests_date, loop.Total_cumulative);
         // console.log(justDates);
 
         newArrayTwo = convertToWeekNumbers(justDates);
@@ -188,8 +188,8 @@
           return new Date(b[0],b[1]-1,b[2]);
         }
 
-        var arr = data.map(function(s){
-          var week = getWeekNumber(parseISOLocal(s));
+        var arr = data.map(function(date, number){
+          var week = getWeekNumber(parseISOLocal(date));
           return week[0];
         }).sort();
 
@@ -205,14 +205,6 @@
 
         console.log('groupedObj' + groupedObj);
 
-        // Grab arrays in order of week number. Sort keys to maintain order
-        var groupedArray = Object.keys(groupedObj).sort().map(key=>groupedObj[key]);
-
-
-        console.log('groupedArray' + groupedArray);
-
-        // Final set of grouped dates
-        console.log(groupedArray.join('\n\n'));
       }
     </script>
 </html>
