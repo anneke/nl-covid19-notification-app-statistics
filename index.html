@@ -190,7 +190,7 @@
 
         var arr = data.map(function(s){
           var week = getWeekNumber(parseISOLocal(s));
-          return week[0] + ('0' + week[1]);
+          return week[0];
         }).sort();
 
         console.log('arr' + arr);
