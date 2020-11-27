@@ -188,10 +188,9 @@
           return new Date(b[0],b[1]-1,b[2]);
         }
 
-        // Prepend year and week number to dates, e.g. "201651:2016-12-20", then sort
         var arr = data.map(function(s){
           var week = getWeekNumber(parseISOLocal(s));
-          return week[0] + ('0' + week[1]).slice(-2);
+          return week[0] + ('0' + week[1]);
         }).sort();
 
         console.log('arr' + arr);
