@@ -4,41 +4,13 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <style>
       .grafiek {
-        width: 600px;
-        height: 300px;
+        width: 1200px;
+        height: 600px;
         padding-bottom: 50px;
       }
 
-      .bar {
-        padding: 0px 5px;
-        position: relative;
-        background: #FFBB99;
-        cursor: pointer;
-      }
-
-      .tooltip-info {
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
-      }
-
-      .bar::before {
-        content: attr(data-date);
-        position: absolute;
-        top: 1.5em;
-        font-size: 0.9em;
-        padding: 1px 5px;
-        display: none;
-        color: white;
-        background: rgba(0, 0, 0, 0.75);
-        border-radius: 4px;
-        transition: opacity 0.1s ease-out;
-        z-index: 99;
-        text-align: left;
-      }
-
-      .bar:hover::before {
-        display: inline-block;
+      .bar:hover {
+        fill: #FFBB99;
       }
     </style>
   </head>
@@ -111,15 +83,15 @@
         function barChart(data) {
           var barwidth = 10;
           var spaceBetweenBars = 2;
-          var peoplePerVerticalPixel = 30000;
+          var svgMaxHeight = 6000000;
+          var peoplePerVerticalPixel = svgMaxHeight / 600;
 
-          var w= data[data.length] * (barwidth + spaceBetweenBars);
+          var w= data.length * (barwidth + spaceBetweenBars);
           var h= 600;
 
           var svg= d3.select('#grafiekDownloads')
               .append('svg')
               .attr('viewBox', '0 0 ' + w + ' ' + h);
-
 
           svg.selectAll('rect.colorBar')
               .data(data)
@@ -146,60 +118,62 @@
                   }
               })
               .attr('data-date', function(d,i){
-                return 'Op ' + data[i].downloads_date + ' werd de app ' + data[i].Total_cumulative + ' keer gedownload.';
+                return 'Op ' + data[i].downloads_date + ' werd de app ' + data[i].downloads_Total_daily + ' keer gedownload.';
               })
           }
 
           barChart(data);
+
+          let barChartBars = document.getElementById("grafiekDownloads");
       });
 
-      d3.csv("statistics/ggd_positive_test_authorisations.csv", function(data) {
-        return {
-          positive_tests_date: data["Date (yyyy-mm-dd)"],
-          positive_tests_thisday: +data["Reported positive tests through app authorised by GGD (daily)"],
-          Total_cumulative : +data["Reported positive test through app authorised by GGD (cumulative)"],
-        };
-      }).then(function(data) {
+      // d3.csv("statistics/ggd_positive_test_authorisations.csv", function(data) {
+      //   return {
+      //     positive_tests_date: data["Date (yyyy-mm-dd)"],
+      //     positive_tests_thisday: +data["Reported positive tests through app authorised by GGD (daily)"],
+      //     Total_cumulative : +data["Reported positive test through app authorised by GGD (cumulative)"],
+      //   };
+      // }).then(function(data) {
 
-        // const justDates = data.map((loop) => loop.positive_tests_date, loop.Total_cumulative);
-        // console.log(justDates);
+      //   // const justDates = data.map((loop) => loop.positive_tests_date, loop.Total_cumulative);
+      //   // console.log(justDates);
 
-        function barChartGGD(data) {
-          var barwidth = 10;
-          var spaceBetweenBars = 2;
-          var peoplePerVerticalPixel = 30000;
+      //   function barChartGGD(data) {
+      //     var barwidth = 10;
+      //     var spaceBetweenBars = 2;
+      //     var peoplePerVerticalPixel = 30000;
 
-          var w= data[data.length] * (barwidth + spaceBetweenBars);
-          var h= 600;
+      //     var w= data[data.length] * (barwidth + spaceBetweenBars);
+      //     var h= 600;
 
-          var svg= d3.select('#aantalWaarschuwingen')
-              .append('svg')
-              .attr('viewBox', '0 0 ' + w + ' ' + h);
+      //     var svg= d3.select('#aantalWaarschuwingen')
+      //         .append('svg')
+      //         .attr('viewBox', '0 0 ' + w + ' ' + h);
 
-          svg.selectAll('rect.colorBar')
-              .data(data)
-              .enter()
-              .append('rect')
-              .attr('width', function(d,i){
-                  return (w / (data.length + 2));
-              })
-              .attr('height', function(d,i){
-                  return (data[i].Total_cumulative / 100);
-              })
-              .attr('x', function(d,i){
-                  return i * (barwidth + 2);
-              })
-              .attr('y', function(d,i){
-                  return h - (data[i].Total_cumulative / 100);
-              })
-              .attr('fill', 'blue')
-              .attr('data-date', function(d,i){
-                return data[i].positive_tests_date;
-              });
-        }
+      //     svg.selectAll('rect.colorBar')
+      //         .data(data)
+      //         .enter()
+      //         .append('rect')
+      //         .attr('width', function(d,i){
+      //             return (w / (data.length + 2));
+      //         })
+      //         .attr('height', function(d,i){
+      //             return (data[i].Total_cumulative / 100);
+      //         })
+      //         .attr('x', function(d,i){
+      //             return i * (barwidth + 2);
+      //         })
+      //         .attr('y', function(d,i){
+      //             return h - (data[i].Total_cumulative / 100);
+      //         })
+      //         .attr('fill', 'blue')
+      //         .attr('data-date', function(d,i){
+      //           return data[i].positive_tests_date;
+      //         });
+      //   }
 
-          barChartGGD(data);
-      });
+      //     barChartGGD(data);
+      // });
 
     </script>
 </html>
