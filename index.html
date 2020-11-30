@@ -8,6 +8,38 @@
         height: 300px;
         padding-bottom: 50px;
       }
+
+      .bar {
+        padding: 0px 5px;
+        position: relative;
+        background: #FFBB99;
+        cursor: pointer;
+      }
+
+      .tooltip-info {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+      }
+
+      .bar::before {
+        content: attr(data-date);
+        position: absolute;
+        top: 1.5em;
+        font-size: 0.9em;
+        padding: 1px 5px;
+        display: none;
+        color: white;
+        background: rgba(0, 0, 0, 0.75);
+        border-radius: 4px;
+        transition: opacity 0.1s ease-out;
+        z-index: 99;
+        text-align: left;
+      }
+
+      .bar:hover::before {
+        display: inline-block;
+      }
     </style>
   </head>
 
@@ -52,10 +84,6 @@
 
 
     <script>
-      
-    </script>
-
-    <script>
       d3.csv("statistics/appstore_statistics.csv", function(data) {
         return {
           downloads_date: data["Date (yyyy-mm-dd)"],
@@ -67,8 +95,8 @@
         };
       }).then(function(data) {
 
-        const justDates = data.map((loop) => loop.downloads_date);
-        newArray = convertToWeekNumbers(justDates);
+        // save all the dates in an array
+        // const justDates = data.map((loop) => loop.downloads_date, loop.Total_cumulative);
 
         // get total number of downloads
         const aantalDownloads = document.getElementById("aantalDownloads");
@@ -81,36 +109,45 @@
         aantalDownloadsPercentageBevolking.innerHTML = calcPercentage.toFixed(2) + '%';
 
         function barChart(data) {
-          var w= 1200;
-          var h= (data[data.length - 1].Total_cumulative / 6500);
+          var barwidth = 10;
+          var spaceBetweenBars = 2;
+          var peoplePerVerticalPixel = 30000;
+
+          var w= data[data.length] * (barwidth + spaceBetweenBars);
+          var h= 600;
 
           var svg= d3.select('#grafiekDownloads')
               .append('svg')
               .attr('viewBox', '0 0 ' + w + ' ' + h);
 
-          var barwidth = w / data.length;
 
           svg.selectAll('rect.colorBar')
               .data(data)
               .enter()
               .append('rect')
               .attr('width', function(d,i){
-                  return (w / (data.length + 2));
+                  return barwidth;
               })
               .attr('height', function(d,i){
-                  const test = (data[i].Total_cumulative / 6500);
-                  return test;
+                  return  (data[i].Total_cumulative / peoplePerVerticalPixel);
               })
               .attr('x', function(d,i){
-                  return i * (barwidth + 2);
+                  return (i * barwidth) + 2;
               })
               .attr('y', function(d,i){
-                  return h - (data[i].Total_cumulative / 6500);
+                  return h - (data[i].Total_cumulative / peoplePerVerticalPixel);
               })
-              .attr('fill', 'blue')
+              .attr('class', 'bar')
+              .attr('fill', function(d,i){
+                  if (d % 2 == 0) {
+                    return 'blue'
+                  } else {
+                    return 'skyblue'
+                  }
+              })
               .attr('data-date', function(d,i){
-                return data[i].downloads_date;
-              });
+                return 'Op ' + data[i].downloads_date + ' werd de app ' + data[i].Total_cumulative + ' keer gedownload.';
+              })
           }
 
           barChart(data);
@@ -124,20 +161,20 @@
         };
       }).then(function(data) {
 
-        const justDates = data.map((loop) => loop.positive_tests_date, loop.Total_cumulative);
+        // const justDates = data.map((loop) => loop.positive_tests_date, loop.Total_cumulative);
         // console.log(justDates);
 
-        newArrayTwo = convertToWeekNumbers(justDates);
-
         function barChartGGD(data) {
-          var w= 1200;
-          var h= (data[data.length - 1].Total_cumulative / 100);
+          var barwidth = 10;
+          var spaceBetweenBars = 2;
+          var peoplePerVerticalPixel = 30000;
+
+          var w= data[data.length] * (barwidth + spaceBetweenBars);
+          var h= 600;
 
           var svg= d3.select('#aantalWaarschuwingen')
               .append('svg')
               .attr('viewBox', '0 0 ' + w + ' ' + h);
-
-          var barwidth = w / data.length;
 
           svg.selectAll('rect.colorBar')
               .data(data)
@@ -147,8 +184,7 @@
                   return (w / (data.length + 2));
               })
               .attr('height', function(d,i){
-                  const test = (data[i].Total_cumulative / 100);
-                  return test;
+                  return (data[i].Total_cumulative / 100);
               })
               .attr('x', function(d,i){
                   return i * (barwidth + 2);
@@ -165,47 +201,6 @@
           barChartGGD(data);
       });
 
-      function convertToWeekNumbers(data) {
-        /* Helper to get the ISO week number of a date
-        ** @param {Date} date to get week of
-        ** @returns {Array} [year, weekNumber]
-        */
-        function getWeekNumber(d) {
-          d = new Date(+d);
-          d.setHours(0,0,0,0);
-          d.setDate(d.getDate() + 4 - (d.getDay()||7));
-          var yearStart = new Date(d.getFullYear(),0,1);
-          var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
-          return [weekNo];
-        }
-
-        /* Parse ISO 8601 format date string to local date
-        ** @param {string} s - string to parse like 2016-12-15
-        ** @returns {Date}
-        */
-        function parseISOLocal(s) {
-          var b = s.split(/\D/);
-          return new Date(b[0],b[1]-1,b[2]);
-        }
-
-        var arr = data.map(function(date, number){
-          var week = getWeekNumber(parseISOLocal(date));
-          return week[0];
-        }).sort();
-
-        console.log('arr' + arr);
-
-        // Group in arrays by week in an object
-        var groupedObj = arr.reduce(function (result, value) {
-          var b = value;
-          if (!result[b[0]]) result[b[0]] = [];
-          result[b[0]].push(b[1]);
-          return result;
-        },{});
-
-        console.log('groupedObj' + groupedObj);
-
-      }
     </script>
 </html>
 
